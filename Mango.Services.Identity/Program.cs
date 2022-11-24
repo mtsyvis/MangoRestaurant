@@ -1,5 +1,6 @@
 using Mango.Services.Identity;
 using Mango.Services.Identity.DbContexts;
+using Mango.Services.Identity.Initializer;
 using Mango.Services.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,8 @@ var serverBuilder = builder.Services.AddIdentityServer(options =>
 
 serverBuilder.AddDeveloperSigningCredential();
 
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,6 +48,10 @@ app.UseRouting();
 app.UseIdentityServer();
 
 app.UseAuthorization();
+
+using var serviceScope = app.Services.CreateScope();
+var dbInitializer = serviceScope.ServiceProvider.GetRequiredService<IDbInitializer>();
+dbInitializer.Initialize();
 
 app.MapControllerRoute(
     name: "default",
