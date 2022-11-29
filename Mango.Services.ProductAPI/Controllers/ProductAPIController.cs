@@ -1,5 +1,6 @@
 ﻿using Mango.Services.ProductAPI.Models.Dtos;
 using Mango.Services.ProductAPI.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Services.ProductAPI.Controllers
@@ -18,6 +19,7 @@ namespace Mango.Services.ProductAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<object> Get()
         {
             try
@@ -84,6 +86,7 @@ namespace Mango.Services.ProductAPI.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<object> Delete(int id)
         {
             try
