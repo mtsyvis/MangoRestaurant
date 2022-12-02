@@ -15,7 +15,10 @@ var configuration = builder.Configuration;
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), options =>
+    {
+        options.EnableRetryOnFailure();
+    }));
 
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
@@ -91,5 +94,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// intialize db
+using var serviceScope = app.Services.CreateScope();
+var db = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+db.Database.EnsureCreated();
 
 app.Run();
