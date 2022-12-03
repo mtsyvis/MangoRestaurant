@@ -31,7 +31,7 @@ var serverBuilder = builder.Services.AddIdentityServer(options =>
 serverBuilder.AddDeveloperSigningCredential();
 
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-//builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 var app = builder.Build();
 
