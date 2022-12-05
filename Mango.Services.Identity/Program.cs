@@ -48,6 +48,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// add Duende server midleware 
 app.UseIdentityServer();
 
 app.UseAuthorization();
