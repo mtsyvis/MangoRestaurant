@@ -1,6 +1,7 @@
 using AutoMapper;
 using Mango.Services.ShopingCardAPI;
 using Mango.Services.ShopingCardAPI.DbContexts;
+using Mango.Services.ShopingCardAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-//builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>

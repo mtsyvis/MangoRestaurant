@@ -112,7 +112,7 @@ namespace Mango.Services.ShopingCardAPI.Repository
                 await _db.SaveChangesAsync();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // todo log exception
                 return false;
