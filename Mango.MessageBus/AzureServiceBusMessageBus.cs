@@ -23,8 +23,6 @@ namespace Mango.MessageBus
             var jsonMessage = JsonConvert.SerializeObject(message);
             ServiceBusMessage finalMessage = new ServiceBusMessage(Encoding.UTF8.GetBytes(jsonMessage));
 
-
-
             await sender.SendMessageAsync(finalMessage);
 
             await client.DisposeAsync();
