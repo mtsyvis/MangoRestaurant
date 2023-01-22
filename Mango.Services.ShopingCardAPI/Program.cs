@@ -1,4 +1,5 @@
 using AutoMapper;
+using Mango.MessageBus;
 using Mango.Services.ShopingCardAPI;
 using Mango.Services.ShopingCardAPI.DbContexts;
 using Mango.Services.ShopingCardAPI.Repository;
@@ -23,6 +24,7 @@ IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
