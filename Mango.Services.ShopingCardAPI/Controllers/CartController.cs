@@ -1,5 +1,6 @@
 ﻿using Mango.MessageBus;
 using Mango.Services.ShopingCardAPI.Messages;
+using Mango.Services.ShopingCardAPI.Models.Dto;
 using Mango.Services.ShopingCardAPI.Models.Dtos;
 using Mango.Services.ShopingCardAPI.Repository;
 using Microsoft.AspNetCore.Http;
@@ -12,14 +13,16 @@ namespace Mango.Services.ShopingCardAPI.Controllers
     public class CartController : Controller
     {
         private readonly ICartRepository _cartRepository;
+        private readonly ICouponRepository _couponRepository;
         private readonly IMessageBus _messageBus;
         protected ResponseDto _response;
 
-        public CartController(ICartRepository cartRepository, IMessageBus messageBus)
+        public CartController(ICartRepository cartRepository, IMessageBus messageBus, ICouponRepository couponRepository)
         {
             _cartRepository = cartRepository;
             this._response = new ResponseDto();
             _messageBus = messageBus;
+            _couponRepository = couponRepository;
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -124,10 +127,23 @@ namespace Mango.Services.ShopingCardAPI.Controllers
             try
             {
                 CartDto cartDto = await _cartRepository.GetCartByUserId(checkoutHeader.UserId);
-                if(cartDto == null)
+                if (cartDto == null)
                 {
                     return BadRequest();
                 }
+
+                if (!string.IsNullOrEmpty(checkoutHeader.CouponCode))
+                {
+                    CouponDto couponDto = await _couponRepository.GetCouponAsync(checkoutHeader.CouponCode);
+                    if (checkoutHeader.DiscountTotal != couponDto.DiscountAmount)
+                    {
+                        _response.IsSuccess = false;
+                        _response.ErrorMessages = new List<string> { "Coupon has changed, please confirm!" };
+                        _response.DisplayMessage = "Coupon has changed, please confirm!";
+                        return _response;
+                    }
+                }
+
                 checkoutHeader.CartDetails = cartDto.CartDetails;
                 // logic to add message to procces order
                 await _messageBus.PublishMessage(checkoutHeader, "checkoutmessagetopic");

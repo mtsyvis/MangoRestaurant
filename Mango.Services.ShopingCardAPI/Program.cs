@@ -24,7 +24,15 @@ IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddSingleton<IMessageBus, AzureServiceBusMessageBus>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<ICouponRepository, CouponRepository>(conf =>
+{
+    conf.BaseAddress = new Uri(builder.Configuration["ServiceUrls:CouponAPI"]);
+    //conf.DefaultRequestHeaders.Authorization 
+});
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
